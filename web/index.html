@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Семантичний Пошук TA-DA!</title>
+  <link rel="icon" type="image/png" href="images/tada_logo2.png">
+  <link rel="shortcut icon" type="image/png" href="images/tada_logo2.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=1759816033">
+</head>
+<body>
+  <header class="tda-header">
+    <div class="tda-wrap">
+      <!-- ЛОГО -->
+      <a class="tda-logo" href="#" onclick="window.location.reload(); return false;">
+        <img src="images/tada_logo2.png" alt="TA-DA!" class="logo-image">
+      </a>
+
+      <!-- КАТАЛОГ -->
+      <button class="tda-catalog" onclick="toggleCatalog()">
+        <svg width="28" height="18" viewBox="0 0 28 18" aria-hidden="true">
+          <!-- Бургер-лінії як на скрині: округлі, з акцентом праворуч -->
+          <line x1="4" y1="3" x2="24" y2="3" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+          <line x1="4" y1="9" x2="20" y2="9" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+          <line x1="4" y1="15" x2="24" y2="15" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Каталог</span>
+      </button>
+
+      <!-- ПОИСК -->
+      <label class="tda-search">
+        <input type="text" id="headerSearchInput" placeholder="Пошук" />
+        <div class="search-icons">
+          <button class="search-icon" id="simpleSearchIcon" onclick="performSearchFromIcon()" title="Звичайний пошук" aria-label="Перемкнути на звичайний пошук">
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button class="search-icon" id="chatSearchIcon" onclick="toggleChatSearch()" title="AI пошук товарів" aria-label="Перемкнути на AI пошук товарів">
+            <img src="images/icon_ai2.png" alt="AI пошук" width="22" height="22">
+          </button>
+        </div>
+      </label>
+
+      <!-- СПОСІБ ОТРИМАННЯ -->
+      <button class="tda-pickup" onclick="toggleDeliveryOptions()">
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 22s7-6.3 7-12a7 7 0 0 0-14 0c0 5.7 7 12 7 12Z" fill="none" stroke="#000" stroke-width="2"/>
+          <circle cx="12" cy="10" r="3" fill="none" stroke="#000" stroke-width="2"/>
+        </svg>
+        <span>Спосіб отримання</span>
+      </button>
+
+      <!-- ИКОНКИ БЛИЖЧЕ ДО СПОСОБУ ОТРИМАННЯ -->
+      <nav class="tda-actions">
+        <a href="#" class="icon-btn" title="Обране" onclick="toggleWishlist()">
+          <svg width="22" height="20" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12.1 21S3 14.7 3 8.8A5.3 5.3 0 0 1 8.4 3.5c1.7 0 2.9.8 3.7 1.9.8-1.1 2-1.9 3.7-1.9A5.3 5.3 0 0 1 21 8.8c0 5.9-9 12.2-9 12.2Z" fill="none" stroke="#000" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="#" class="icon-btn" title="Кошик" onclick="toggleCart()">
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6h15l-2 9H7L6 6ZM6 6 5 3H2" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/>
+          </svg>
+          <span class="header-cart-badge" id="headerCartBadge" aria-label="Кількість товарів в кошику">0</span>
+        </a>
+        <a href="#" class="icon-btn tda-auth" onclick="showAuthModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" fill="none" stroke="#000" stroke-width="2"/>
+            <path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Авторизація</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+  <main class="content-wrapper">
+    <div class="container">
+      <!-- Привітальна сторінка -->
+      <div id="welcomePage" class="page active">
+        <div class="welcome-container">
+          <!-- Декоративні елементи -->
+          <div class="welcome-decoration welcome-decoration-1"></div>
+          <div class="welcome-decoration welcome-decoration-2"></div>
+          
+          <div class="welcome-header">
+            <h1 class="welcome-title">Ласкаво просимо на сайт TA-DA!</h1>
+            <p class="welcome-subtitle">Оберіть спосіб пошуку товарів</p>
+          </div>
+          
+          <div class="welcome-logo-wrapper">
+            <img src="images/logo_aitada.png" alt="TA-DA AI" class="welcome-logo">
+          </div>
+          
+          <div class="welcome-cards">
+            <div class="welcome-card" onclick="activateSimpleSearchFromWelcome()">
+              <div class="welcome-card-icon">🔍</div>
+              <h3 class="welcome-card-title">Звичайний пошук</h3>
+              <p class="welcome-card-description">Швидкий пошук товарів за назвою або категорією</p>
+              <div class="welcome-card-button">Спробувати</div>
+            </div>
+            
+            <div class="welcome-card welcome-card-featured" onclick="document.getElementById('chatSearchIcon').click()">
+              <div class="welcome-card-badge">Рекомендуємо</div>
+              <div class="welcome-card-icon">🤖</div>
+              <h3 class="welcome-card-title">AI Чат-пошук</h3>
+              <p class="welcome-card-description">Розумний помічник знайде саме те, що вам потрібно</p>
+              <div class="welcome-card-button">Спробувати з AI</div>
+            </div>
+          </div>
+          
+          <div class="welcome-features">
+            <div class="welcome-feature">
+              <span class="welcome-feature-icon">⚡</span>
+              <span>Швидкий пошук</span>
+            </div>
+            <div class="welcome-feature">
+              <span class="welcome-feature-icon">🎯</span>
+              <span>Точні результати</span>
+            </div>
+            <div class="welcome-feature">
+              <span class="welcome-feature-icon">💬</span>
+              <span>Розумні рекомендації</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Простий пошук (за замовчуванням) -->
+      <div id="simpleSearchPage" class="page">
+        <div id="results-simple">
+        </div>
+      </div>
+
+      <!-- Чат-пошук із потоковими секціями -->
+      <div id="chatSearchPage" class="page">
+        <!-- Привітальний блок AI пошуку -->
+        <div class="ai-welcome-container" id="aiWelcomeContainer">
+          <div class="ai-welcome-robot">
+            <div class="ai-welcome-icon">
+              <img src="images/logo_aitada1.png" alt="AI Assistant" class="ai-robot-image">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Стрічка секцій; кожен запит додає нову -->
+        <div id="chatThread"></div>
+        
+        <!-- Динамічна пошукова строка (центр → футер) -->
+        <div class="chat-search-box chat-search-box--center" id="chatSearchBox" onclick="activateSearchBox()">
+          <input type="text" id="chatSearchInput" placeholder="Напишіть що ви шукаєте, або задайте питання...">
+          <button id="chatSearchButton" onclick="handleSearchButtonClick(event)" class="arrow-button" aria-label="Виконати пошук">
+            <img src="images/icon_search.png" alt="Пошук" width="20" height="20">
+          </button>
+        </div>
+        
+        <!-- Приклади запитів -->
+        <div class="ai-examples" id="aiExamples">
+          <h3 class="ai-examples-title">Спробуйте запитати:</h3>
+          <div class="ai-examples-list">
+            <button class="ai-example-btn" onclick="fillChatSearchInput('Що подарувати дитині на 5 років?')">
+              <span class="ai-example-icon">🎁</span>
+              Що подарувати дитині на 5 років?
+            </button>
+            <button class="ai-example-btn" onclick="fillChatSearchInput('Потрібні товари для школи першокласнику')">
+              <span class="ai-example-icon">🎒</span>
+              Потрібні товари для школи першокласнику
+            </button>
+            <button class="ai-example-btn" onclick="fillChatSearchInput('Що треба для пікніка на природі?')">
+              <span class="ai-example-icon">🧺</span>
+              Що треба для пікніка на природі?
+            </button>
+            <button class="ai-example-btn" onclick="fillChatSearchInput('Хочу організувати день народження вдома')">
+              <span class="ai-example-icon">🎉</span>
+              Хочу організувати день народження вдома
+            </button>
+          </div>
+        </div>
+        
+        <!-- Швидкі кнопки пошуку -->
+        <div class="quick-search-buttons" id="quickSearchButtons">
+          <button class="quick-search-btn" onclick="performQuickSearch(event, 'товари для дому')">
+            <span class="quick-search-icon">🏠</span>
+            Товари для дому
+          </button>
+          <button class="quick-search-btn" onclick="performQuickSearch(event, 'шкільні товари')">
+            <span class="quick-search-icon">📚</span>
+            Шкільні товари
+          </button>
+          <button class="quick-search-btn" onclick="performQuickSearch(event, 'сезонні товари')">
+            <span class="quick-search-icon">☀️</span>
+            Сезонні товари
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Контейнер для множинних міні-корзин (зліва знизу) -->
+  <div id="mini-cart-container" class="mini-cart-container"></div>
+
+  <!-- Повна корзина (як на скріншоті) -->
+  <div id="full-cart" class="full-cart">
+    <div class="full-cart-overlay" onclick="hideFullCart()"></div>
+    <div class="full-cart-content">
+      <div class="full-cart-header">
+        <h2 class="full-cart-title">Ваш кошик!</h2>
+        <button class="full-cart-close" onclick="hideFullCart()" aria-label="Закрити корзину">×</button>
+      </div>
+      
+      <div class="full-cart-body">
+        <!-- Ліва панель - товари -->
+        <div class="full-cart-items">
+          <div id="full-cart-items-list">
+            <p class="empty-cart-message">Кошик порожній</p>
+          </div>
+        </div>
+        
+        <!-- Права панель - підсумок -->
+        <div class="full-cart-summary">
+          <div class="full-cart-total-row">
+            <div class="full-cart-total-items">
+              <span>Товарів: <span id="full-cart-items-count">0</span></span>
+            </div>
+            <div class="full-cart-total-price">
+              <span id="full-cart-total-price">0 ₴</span>
+            </div>
+          </div>
+          <button class="full-cart-checkout-btn" onclick="proceedToCheckout()" aria-label="Оформити замовлення">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+              <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+            Оформити замовлення
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Футер (порожній, пошукова строка динамічна) -->
+  <footer class="footer"></footer>
+
+  <!-- Білий блок під пошуковою строкою -->
+  <div id="footer-mask" class="footer-mask"></div>
+
+  <!-- Збільшене фото -->
+  <div id="image-zoom-overlay" class="image-zoom-overlay" onclick="closeImageZoom()">
+    <div class="image-zoom-container" onclick="event.stopPropagation()">
+      <img id="image-zoom-image" class="image-zoom-image" src="" alt="Збільшене фото">
+      <button class="image-zoom-close" onclick="closeImageZoom()" title="Закрити">×</button>
+    </div>
+  </div>
+
+  <script src="scripts.js?v=1759816033"></script>
+  <button id="backToTopBtn" title="Вгору" class="back-to-top-btn">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.59 5.58L20 12l-8-8-8 8z"/></svg>
+    <span class="sr-only">Вгору</span>
+  </button>
+</body>
+  </html>
