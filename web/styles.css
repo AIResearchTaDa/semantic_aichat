@@ -382,8 +382,8 @@ body{font-family:'Poppins','Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",R
 }
 
 .ai-robot-image {
-  width: 110px;
-  height: 110px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
 }
 
