@@ -919,6 +919,7 @@ async function performChatSearch(directQuery = null){
   // Скидаємо контекст діалогу для нового пошуку
   chatDialogContext = null;
   
+  // Очищаємо поле пошуку після запуску
   chatSearchInput.value = '';
   
   // Змінюємо іконку кнопки на квадратик (кнопка зупинки)
@@ -3437,13 +3438,9 @@ function fillChatSearchInput(text) {
   const chatInput = document.getElementById('chatSearchInput');
   if (chatInput) {
     chatInput.value = text;
-    chatInput.focus();
     
-    // Прокручуємо до пошукової строки
-    const chatSearchBox = document.getElementById('chatSearchBox');
-    if (chatSearchBox) {
-      chatSearchBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    // Автоматично запускаємо пошук
+    performChatSearch(text);
   }
 }
 
