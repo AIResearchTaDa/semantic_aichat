@@ -38,6 +38,8 @@ load_dotenv()
 # Settings
 class Settings(BaseSettings):
     elastic_url: str = Field(default="http://localhost:9200", env="ELASTIC_URL")
+    elastic_user: str = Field(default="elastic", env="ELASTIC_USER")
+    elastic_password: str = Field(default="elastic", env="ELASTIC_PASSWORD")
     embedding_api_url: str = Field(default="http://10.2.0.171:9001/api/embeddings", env="EMBEDDING_API_URL")
     ollama_model_name: str = Field(default="dengcao/Qwen3-Embedding-8B:Q8_0", env="OLLAMA_MODEL_NAME")
     index_name: str = Field(default="products_qwen3_8b", env="INDEX_NAME")
@@ -192,7 +194,10 @@ async def reindex_products():
     logger.info("="*80)
     
     # Initialize clients
-    es = AsyncElasticsearch([settings.elastic_url])
+    es = AsyncElasticsearch(
+        [settings.elastic_url],
+        basic_auth=(settings.elastic_user, settings.elastic_password)
+    )
     http_client = httpx.AsyncClient(timeout=60.0)
     
     try:

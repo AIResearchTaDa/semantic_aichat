@@ -8,14 +8,15 @@ services:
       - "9300:9300"
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=elastic
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     networks:
       - semantic-search-net
     healthcheck:
-      test: ["CMD-SHELL", "curl -s --fail http://localhost:9200/_cluster/health || exit 1"]
+      test: ["CMD-SHELL", "curl -s -u elastic:elastic --fail http://localhost:9200/_cluster/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -47,6 +48,24 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - api
+    networks:
+      - semantic-search-net
+    restart: unless-stopped
+
+  kibana:
+    image: kibana:8.11.1
+    container_name: kibana-qwen3
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-qwen3:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=kibana_pass123
+      - SERVER_NAME=kibana-qwen3
+      - SERVER_HOST=0.0.0.0
+    depends_on:
+      elasticsearch-qwen3:
+        condition: service_healthy
     networks:
       - semantic-search-net
     restart: unless-stopped

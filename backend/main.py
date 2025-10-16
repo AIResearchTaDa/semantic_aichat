@@ -39,6 +39,8 @@ load_dotenv()
 class Settings(BaseSettings):
     # ES / Embeddings
     elastic_url: str = Field(default="http://elasticsearch:9200", env="ELASTIC_URL")
+    elastic_user: str = Field(default="elastic", env="ELASTIC_USER")
+    elastic_password: str = Field(default="elastic", env="ELASTIC_PASSWORD")
     embedding_api_url: str = Field(default="http://10.2.0.171:9001/api/embeddings", env="EMBEDDING_API_URL")
     ollama_model_name: str = Field(default="dengcao/Qwen3-Embedding-8B:Q8_0", env="OLLAMA_MODEL_NAME")
     index_name: str = Field(default="products_qwen3_8b", env="INDEX_NAME")
@@ -63,7 +65,7 @@ class Settings(BaseSettings):
     # Tokens
     gpt_max_tokens_analyze: int = Field(default=1500, env="GPT_MAX_TOKENS_ANALYZE")
     gpt_max_tokens_reco: int = Field(default=2000, env="GPT_MAX_TOKENS_RECO")
-    gpt_reco_timeout_seconds: float = Field(default=20.0, env="GPT_RECO_TIMEOUT_SECONDS")  # Окремий timeout для рекомендацій
+    gpt_reco_timeout_seconds: float = Field(default=30.0, env="GPT_RECO_TIMEOUT_SECONDS")  # Окремий timeout для рекомендацій
 
     # Recommendations
     reco_detailed_count: int = Field(default=3, env="RECO_DETAILED_COUNT")
@@ -415,12 +417,42 @@ def _allowed_category_codes_for_query(query: str) -> Optional[Set[str]]:
     accessories_tokens = ["шкарп", "носк", "колгот", "панчох", "шапк", "шарф", "рукавиц", "перчат"]
     toys_tokens = ["іграш", "игруш", "ляльк", "кукл", "конструктор", "м'яч", "мяч", "плюш", "водний пістолет", "нарукавник", "басейн"]
     house_tokens = ["посуд", "кастр", "сковор", "таріл", "чашк", "келих", "кухон", "ганчір", "швабр", "спрей", "миюч"]
+    fishing_tokens = ["рибал", "рыбал", "вудил", "удочк", "спінінг", "спиннинг", "леска", "волосінь", "гачок", "крючок", "наживк", "приманк", "катушк", "рибальськ"]
+    garden_tokens = ["насінн", "семен", "сад", "город", "рослин", "растен", "квіт", "цвет", "розсад"]
+    stationery_tokens = ["зошит", "тетрад", "ручк", "олівц", "карандаш", "пенал", "канцел", "фломастер", "маркер", "фарб", "краск", "папір", "бумаг", "альбом", "щоденник"]
+    cosmetics_tokens = ["зубн", "паст", "шампун", "мило", "гель", "крем", "косметик", "догляд", "гігієн"]
+    pets_tokens = ["котів", "кішок", "собак", "тварин", "корм для", "намисто для", "іграшка для кота", "миска для"]
 
     is_clothes = any(t in q for t in clothes_tokens)
     is_shoes = any(t in q for t in shoes_tokens)
     is_accessories = any(t in q for t in accessories_tokens)
     is_toys = any(t in q for t in toys_tokens)
     is_house = any(t in q for t in house_tokens)
+    is_fishing = any(t in q for t in fishing_tokens)
+    is_garden = any(t in q for t in garden_tokens)
+    is_stationery = any(t in q for t in stationery_tokens)
+    is_cosmetics = any(t in q for t in cosmetics_tokens)
+    is_pets = any(t in q for t in pets_tokens)
+
+    # Риболовля
+    if is_fishing:
+        return {"fishing"}
+    
+    # Садівництво
+    if is_garden:
+        return {"garden"}
+    
+    # Канцелярія
+    if is_stationery:
+        return {"stationery"}
+    
+    # Косметика
+    if is_cosmetics:
+        return {"cosmetics"}
+    
+    # Товари для тварин
+    if is_pets:
+        return {"pets"}
 
     # Одяг (без взуття та аксесуарів)
     if is_clothes and not is_shoes and not is_toys and not is_house:
@@ -1704,7 +1736,7 @@ categories: ["Аксесуари", "Іграшки", "Одяг", "Канцеля
             recs, msg = self._local_recommendations(products[:10], original_query)
             return recs[:3], msg
 
-    async def categorize_products(self, products: List[SearchResult], query: str, timeout_seconds: float = 6.0) -> Tuple[List[str], Dict[str, List[str]]]:
+    async def categorize_products(self, products: List[SearchResult], query: str, timeout_seconds: float = 15.0) -> Tuple[List[str], Dict[str, List[str]]]:
         """Product categorization. Never fails - has local fallback."""
         if not products:
             return [], {}
@@ -1716,7 +1748,7 @@ categories: ["Аксесуари", "Іграшки", "Одяг", "Канцеля
             "id": p.id,
             "title": p.title_ua or p.title_ru or "",
             "desc": (p.description_ua or p.description_ru or "")[:200]
-        } for p in products[:60]]
+        } for p in products[:30]]
 
         # Створюємо список доступних категорій для GPT
         available_categories = list(CATEGORY_SCHEMA.values())
@@ -1831,18 +1863,29 @@ categories: ["Аксесуари", "Іграшки", "Одяг", "Канцеля
         logger.info(f"🏷️ _local_categorize: processing {len(products)} products for query '{query}'")
         buckets, counts = _aggregate_categories(products)
         logger.info(f"🏷️ _local_categorize: found {len(buckets)} category buckets, counts: {counts}")
-        counts = [(c, n) for (c, n) in counts if n >= 2]
+        
+        # Фільтруємо категорії за allowed ДО вибору топ-6
+        allowed = _allowed_category_codes_for_query(query)
+        logger.info(f"🏷️ _local_categorize: allowed categories for query: {allowed}")
+        
+        if allowed:
+            # Фільтруємо counts тільки за дозволеними категоріями
+            counts = [(c, n) for (c, n) in counts if c in allowed and n >= 2]
+            logger.info(f"🏷️ _local_categorize: after filtering by allowed: {counts}")
+        else:
+            # Якщо немає фільтра - просто вимагаємо мінімум 2 товари
+            counts = [(c, n) for (c, n) in counts if n >= 2]
+        
         if not counts:
             label = "Релевантні товари"
             logger.info(f"🏷️ _local_categorize: no categories with 2+ products, returning default label")
             return [label], {label: [p.id for p in products[: min(30, len(products))]]}
+        
+        # Беремо топ-6 категорій ПІСЛЯ фільтрації
         labels = [c for c, _ in counts[:6]]
-        id_buckets = {code: [p.id for p in buckets.get(code, [])] for code, _ in counts}
-        allowed = _allowed_category_codes_for_query(query)
-        logger.info(f"🏷️ _local_categorize: allowed categories for query: {allowed}")
-        if allowed:
-            labels = [l for l in labels if l in allowed] or labels
-            id_buckets = {k: v for k, v in id_buckets.items() if k in (set(labels) | (allowed or set()))} or id_buckets
+        id_buckets = {code: [p.id for p in buckets.get(code, [])] for code in labels}
+        
+        # Конвертуємо коди в красиві назви
         pretty_labels: List[str] = []
         pretty_map: Dict[str, List[str]] = {}
         for code in labels:
@@ -1933,7 +1976,11 @@ class SearchContextManager:
 # Dependency providers
 def get_elasticsearch_client() -> AsyncElasticsearch:
     if dependencies.es_client is None:
-        dependencies.es_client = AsyncElasticsearch(settings.elastic_url, request_timeout=30)
+        dependencies.es_client = AsyncElasticsearch(
+            settings.elastic_url,
+            basic_auth=(settings.elastic_user, settings.elastic_password),
+            request_timeout=30
+        )
     return dependencies.es_client
 
 def get_http_client() -> httpx.AsyncClient:
@@ -2355,15 +2402,15 @@ async def chat_search(
         labels: List[str] = []
         id_buckets: Dict[str, List[str]] = {}
         try:
-            labels, id_buckets = await gpt_service.categorize_products(candidate_results[:60], query, timeout_seconds=10.0)
+            labels, id_buckets = await gpt_service.categorize_products(candidate_results[:30], query, timeout_seconds=15.0)
             logger.info(f"🏷️ POST /chat/search: Categorization succeeded: {len(labels)} categories")
             logger.info(f"🏷️ POST /chat/search: Category labels: {labels}")
         except Exception as e:
             logger.error(f"❌ POST /chat/search: Categorization failed: {e}", exc_info=True)
             labels, id_buckets = [], {}
         
-        # Get recommendations (збільшено з 40 до 60 для більшої різноманітності)
-        recommendations, assistant_message = await gpt_service.analyze_products(candidate_results[:60], query)
+        # Get recommendations (зменшено до 20 для швидкості GPT)
+        recommendations, assistant_message = await gpt_service.analyze_products(candidate_results[:20], query)
         
         # Final results
         sorted_candidates = sorted(candidate_results, key=lambda r: r.score, reverse=True)
@@ -2911,7 +2958,7 @@ async def chat_search_sse(
             labels: List[str] = []
             id_buckets: Dict[str, List[str]] = {}
             try:
-                labels, id_buckets = await gpt_service.categorize_products(candidate_results[:60], query, timeout_seconds=10.0)
+                labels, id_buckets = await gpt_service.categorize_products(candidate_results[:30], query, timeout_seconds=15.0)
                 logger.info(f"🏷️ Categorization succeeded: {len(labels)} categories, {len(id_buckets)} buckets")
                 logger.info(f"🏷️ Category labels: {labels}")
             except Exception as e:
@@ -2921,8 +2968,8 @@ async def chat_search_sse(
             recommendations: List[ProductRecommendation] = []
             assistant_message: str = ""
             try:
-                # Збільшено з 40 до 60 для більшої різноманітності рекомендацій
-                recommendations, assistant_message = await gpt_service.analyze_products(candidate_results[:60], query)
+                # Зменшено до 20 для швидкості GPT
+                recommendations, assistant_message = await gpt_service.analyze_products(candidate_results[:20], query)
             except Exception:
                 recommendations, assistant_message = [], "Ось підібрані товари за вашим запитом."
             

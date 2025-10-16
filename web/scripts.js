@@ -1235,7 +1235,7 @@ async function runChatRoundStreaming(input){
           // Визначаємо текст на основі типу повідомлення
           let statusText = 'Думаю';
           if (type === 'searching') {
-            statusText = 'Шукаю';
+            statusText = 'Шукаю товари';
           } else if (type === 'thinking') {
             statusText = 'Думаю';
           }
