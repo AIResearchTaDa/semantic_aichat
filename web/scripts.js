@@ -42,6 +42,7 @@ const CATEGORY_SCHEMA = {
   "house_kitchen_tools": {"label": "Кухонні аксесуари"},
   "house_kitchen_storage": {"label": "Ємності для зберігання"},
   "house_kitchen_textiles": {"label": "Кухонний текстиль"},
+  "house_kitchen": {"label": "Кухня"}, // Загальна категорія для backend
   // Прибирання та господарські товари
   "house_cleaning_tools": {"label": "Інвентар для прибирання"},
   "house_cleaning_chemicals": {"label": "Побутова хімія"},
@@ -60,6 +61,7 @@ const CATEGORY_SCHEMA = {
   "stationery_cases": {"label": "Пенали та папки"},
   "stationery_art": {"label": "Товари для творчості"},
   "stationery_office": {"label": "Офісні товари"},
+  "stationery": {"label": "Канцелярія"}, // Загальна категорія для backend
   // Товари для дому
   "home_decor": {"label": "Декор та прикраси"},
   "home_textiles": {"label": "Домашній текстиль"},
@@ -75,7 +77,10 @@ const CATEGORY_SCHEMA = {
   // Інше
   "home_insects": {"label": "Від комах"},
   "auto_accessories": {"label": "Автотовари"},
-  "pet_supplies": {"label": "Для тварин"}
+  "pet_supplies": {"label": "Для тварин"},
+  // Спеціальні категорії
+  "recommended": {"label": "⭐ Рекомендовано для вас"},
+  "misc": {"label": "Релевантні товари"}
 };
 
 // DOM та стан
@@ -1004,22 +1009,17 @@ async function runChatRound(input){
       // Відбір товарів
       let filtered = allProducts;
       if (newFilter) {
-        // Спочатку шукаємо по label (наприклад "⭐ Рекомендовано для вас")
-        const bucketItems = buckets[input?.value] || buckets[input?.valueLabel] || buckets[newFilter];
+        // Шукаємо по code (бекенд повертає buckets_by_code)
+        const bucketItems = buckets[newFilter];
         
         if (Array.isArray(bucketItems) && bucketItems.length > 0) {
           // bucketItems містить ID товарів (strings), а не об'єкти
           const idSet = new Set(bucketItems);
           filtered = allProducts.filter(p => idSet.has(p.id));
         } else {
-          // Fallback по ключових словах з CATEGORY_SCHEMA
-          const kws = CATEGORY_SCHEMA[newFilter]?.keywords || [];
-          if (kws.length > 0) {
-            const hay = (p) => `${p?.title_ua || ''} ${p?.description_ua || ''}`.toLowerCase();
-            filtered = allProducts.filter(p => kws.some(kw => hay(p).includes(kw)));
-          } else {
-            filtered = allProducts; // Показуємо все якщо немає фільтрів
-          }
+          // Fallback: показуємо всі товари
+          console.warn(`⚠️ Не знайдено bucket для коду "${newFilter}", показуємо всі товари`);
+          filtered = allProducts;
         }
       }
 
