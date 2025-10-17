@@ -1664,7 +1664,10 @@ body{font-family:'Poppins','Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",R
   flex-direction: column;
   position: relative;
   border: 1px solid #f0f0f0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), 
+              box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+              border 0.4s ease,
+              background 0.4s ease;
   will-change: transform, box-shadow;
 }
 
@@ -1675,10 +1678,9 @@ body{font-family:'Poppins','Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",R
   border-color: #e0e0e0;
 }
 
-/* Ефект при натисканні на картку */
+/* Ефект при натисканні на картку - відключено, щоб не конфліктувало з вибором */
 .products-carousel .product-card:active {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1) !important;
+  /* Видалено ефект підйому при натисканні, щоб не конфліктувало з анімацією вибору */
 }
 
 /* Розгорнутий режим каруселі */
@@ -1707,10 +1709,9 @@ body{font-family:'Poppins','Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",R
   border-color: #e0e0e0;
 }
 
-/* Ефект при натисканні в розгорнутому режимі */
+/* Ефект при натисканні в розгорнутому режимі - відключено */
 .products-carousel.expanded .product-card:active {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1) !important;
+  /* Видалено ефект підйому при натисканні */
 }
 
 /* Кнопка розгортання каруселі */
@@ -1825,34 +1826,55 @@ body{font-family:'Poppins','Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",R
   margin-bottom: 0;
 }
 
-/* Закладка для вибраної карточки - справа внизу */
-.products-carousel .product-card.selected::after {
-  content: "У кошику";
+/* Закладка для вибраної карточки - справа внизу (замінена на кнопку) */
+.products-carousel .product-card .cart-status-btn {
   position: absolute;
   bottom: 16px;
   right: 16px;
   padding: 6px 12px;
   background: linear-gradient(135deg, var(--primary-color) 0%, #ffb81f 100%);
   color: #1a1a1a;
+  border: none;
   border-radius: 6px;
   font-size: 11px;
   font-weight: 700;
   box-shadow: 0 4px 12px rgba(255, 207, 40, 0.4);
-  z-index: 5;
-  animation: bookmarkAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 15;
+  animation: bookmarkAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   text-align: center;
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  cursor: pointer;
+  display: none;
+  opacity: 0;
+}
+
+.products-carousel .product-card.selected .cart-status-btn {
+  display: block;
+  opacity: 1;
+}
+
+.products-carousel .product-card .cart-status-btn:hover {
+  /* Убрано увеличение кнопки при наведении */
+  box-shadow: 0 6px 16px rgba(255, 207, 40, 0.5);
+}
+
+.products-carousel .product-card .cart-status-btn:active {
+  transform: scale(0.95);
 }
 
 @keyframes bookmarkAppear {
   0% {
-    transform: scale(0) rotate(-45deg);
+    transform: scale(0.8) translateY(10px);
     opacity: 0;
   }
+  60% {
+    transform: scale(1.05) translateY(-2px);
+    opacity: 1;
+  }
   100% {
-    transform: scale(1) rotate(0deg);
+    transform: scale(1) translateY(0);
     opacity: 1;
   }
 }
@@ -1864,14 +1886,11 @@ body{font-family:'Poppins','Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",R
 }
 
 
-/* Ефект при натисканні на вибрану картку */
+/* Ефект при натисканні на вибрану картку - залишаємо її в піднятому стані */
 .products-carousel .product-card.selected:active {
-  transform: translateY(-4px) !important;
-  box-shadow: 0 10px 28px rgba(255, 207, 40, 0.25), 0 0 0 4px rgba(255, 207, 40, 0.15) !important;
-}
-
-.products-carousel .product-card.selected:active::after {
-  transform: scale(0.95);
+  /* Карточка залишається в своєму піднятому стані при натисканні */
+  transform: translateY(-12px) !important;
+  box-shadow: 0 12px 32px rgba(255, 207, 40, 0.25), 0 0 0 4px rgba(255, 207, 40, 0.15) !important;
 }
 
 /* Курсор для товарів під час завантаження */
@@ -2207,10 +2226,10 @@ body{font-family:'Poppins','Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",R
 
 .image-zoom-container {
   position: relative;
-  max-width: 60%;
-  max-height: 60%;
-  transform: scale(0.5);
-  transition: transform 0.3s ease;
+  max-width: 90%;
+  max-height: 90%;
+  transform: scale(0.3);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .image-zoom-overlay.show .image-zoom-container {
@@ -2310,8 +2329,8 @@ body{font-family:'Poppins','Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",R
 .recommendation-badge {
   position: absolute;
   top: 12px;
-  right: 12px;
-  left: auto;
+  left: 12px;
+  right: auto;
   background: rgba(255, 207, 40, 0.95);
   color: #1a1a1a;
   padding: 4px 8px;
@@ -2324,6 +2343,91 @@ body{font-family:'Poppins','Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",R
   border: none;
 }
 
+/* Кнопка "Обране" справа зверху */
+.wishlist-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.98);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  overflow: hidden;
+}
+
+.wishlist-btn:hover {
+  background: rgba(255, 207, 40, 0.95);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(255, 207, 40, 0.3);
+}
+
+.wishlist-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Кнопка збільшення зображення - справа знизу всередині контейнера зображення */
+.products-carousel .product-card .product-image-container .image-zoom-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.98);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 15;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+.products-carousel .product-card .product-image-container .image-zoom-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Запобігаємо підйому карточки при натисканні на кнопки */
+.products-carousel .product-card:has(.wishlist-btn:active),
+.products-carousel .product-card:has(.cart-status-btn:active),
+.products-carousel .product-card:has(.image-zoom-btn:active) {
+  transform: translateY(0) !important;
+}
+
+.products-carousel .product-card.selected:has(.wishlist-btn:active),
+.products-carousel .product-card.selected:has(.cart-status-btn:active),
+.products-carousel .product-card.selected:has(.image-zoom-btn:active) {
+  transform: translateY(-12px) !important;
+}
+
+.products-carousel.expanded .product-card:has(.wishlist-btn:active),
+.products-carousel.expanded .product-card:has(.cart-status-btn:active),
+.products-carousel.expanded .product-card:has(.image-zoom-btn:active) {
+  transform: translateY(0) !important;
+}
 
 /* Стилі градієнтів релевантності прибрано */
 

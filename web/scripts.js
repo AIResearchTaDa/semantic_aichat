@@ -12,76 +12,90 @@ const CHAT_WELCOME_SEEN_KEY = 'chat_welcome_seen';
 
 // ChatGPT тепер через backend API
 const CHAT_API_URL = '/api/chat/advice';
-const TA_DA_API_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpIjoiNTM2NDg3MzAiLCJzIjo4MDk2NzgzMzgyMDQ2MTd9.PZx337yjQl5xX0FPv-scK4wPzuzMZ1zTWTrLoaTI3iY";
+// Backend сам додає правильний токен, клієнтський токен не потрібен
+// const TA_DA_API_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpIjoiNTM2NDg3MzAiLCJzIjo4MDk2NzgzMzgyMDQ2MTd9.PZx337yjQl5xX0FPv-scK4wPzuzMZ1zTWTrLoaTI3iY";
 
-// Схема категорій (синхронізована з backend) - розширена версія на основі асортименту TA-DA
+// Схема категорій (синхронізована з backend main.py)
 const CATEGORY_SCHEMA = {
-  // Одяг
-  "clothes_tshirts": {"label": "Футболки"},
-  "clothes_shirts": {"label": "Сорочки"},
-  "clothes_pants": {"label": "Штани"},
-  "clothes_shorts": {"label": "Шорти"},
-  "clothes_dresses": {"label": "Сукні"},
-  "clothes_skirts": {"label": "Спідниці"},
-  "clothes_sweaters": {"label": "Светри/Худі"},
-  "clothes_outerwear": {"label": "Куртки/Пальта"},
-  "clothes_underwear": {"label": "Білизна/Шкарпетки"},
-  "clothes_sleepwear": {"label": "Піжами/Домашній одяг"},
-  "clothes_accessories": {"label": "Аксесуари для одягу"},
-  "clothes_shoes": {"label": "Взуття"},
-  // Іграшки та ігри
-  "toys_water": {"label": "Для плавання та води"},
-  "toys_general": {"label": "Іграшки"},
-  "toys_educational": {"label": "Розвиваючі іграшки"},
-  "games_board": {"label": "Настільні ігри"},
-  "toys_outdoor": {"label": "Для активного відпочинку"},
-  // Кухня та посуд
-  "house_kitchen_cookware": {"label": "Кухонний посуд"},
-  "house_kitchen_tableware": {"label": "Посуд для сервірування"},
-  "house_kitchen_cutlery": {"label": "Столові прибори"},
-  "house_kitchen_tools": {"label": "Кухонні аксесуари"},
-  "house_kitchen_storage": {"label": "Ємності для зберігання"},
-  "house_kitchen_textiles": {"label": "Кухонний текстиль"},
-  "house_kitchen": {"label": "Кухня"}, // Загальна категорія для backend
-  // Прибирання та господарські товари
-  "house_cleaning_tools": {"label": "Інвентар для прибирання"},
-  "house_cleaning_chemicals": {"label": "Побутова хімія"},
-  "house_cleaning_bathroom": {"label": "Для ванної кімнати"},
-  "house_laundry": {"label": "Для прання"},
-  // Косметика та гігієна
-  "cosmetics_skincare": {"label": "Догляд за шкірою"},
-  "cosmetics_suncare": {"label": "Сонцезахисні засоби"},
-  "cosmetics_body": {"label": "Догляд за тілом"},
-  "cosmetics_oral": {"label": "Гігієна порожнини рота"},
-  "cosmetics_firstaid": {"label": "Аптечка"},
-  // Канцелярія
-  "stationery_notebooks": {"label": "Зошити та блокноти"},
-  "stationery_paper": {"label": "Папір"},
-  "stationery_writing": {"label": "Ручки та олівці"},
-  "stationery_cases": {"label": "Пенали та папки"},
-  "stationery_art": {"label": "Товари для творчості"},
-  "stationery_office": {"label": "Офісні товари"},
-  "stationery": {"label": "Канцелярія"}, // Загальна категорія для backend
-  // Товари для дому
-  "home_decor": {"label": "Декор та прикраси"},
-  "home_textiles": {"label": "Домашній текстиль"},
-  "home_storage": {"label": "Організація та зберігання"},
-  "home_lighting": {"label": "Освітлення"},
-  "home_electronics": {"label": "Побутова електроніка"},
-  "home_garden": {"label": "Для саду та городу"},
-  // Сезонні товари
-  "seasonal_summer": {"label": "Літні товари"},
-  "seasonal_winter": {"label": "Зимові товари"},
-  "seasonal_holiday": {"label": "Святкові товари"},
-  "seasonal_bbq": {"label": "Для пікніка та барбекю"},
-  // Інше
-  "home_insects": {"label": "Від комах"},
-  "auto_accessories": {"label": "Автотовари"},
-  "pet_supplies": {"label": "Для тварин"},
-  // Спеціальні категорії
-  "recommended": {"label": "⭐ Рекомендовано для вас"},
-  "misc": {"label": "Релевантні товари"}
+  // ОДЯГ
+  "clothing": {
+    "label": "Одяг",
+    "emoji": "👕"
+  },
+  "clothing_men": {
+    "label": "Чоловічий одяг",
+    "emoji": "👔"
+  },
+  "clothing_women": {
+    "label": "Жіночий одяг",
+    "emoji": "👗"
+  },
+  "clothing_kids": {
+    "label": "Дитячий одяг",
+    "emoji": "👶"
+  },
+  
+  // ВЗУТТЯ
+  "footwear": {
+    "label": "Взуття",
+    "emoji": "👟"
+  },
+  
+  // АКСЕСУАРИ
+  "accessories": {
+    "label": "Аксесуари",
+    "emoji": "🧦"
+  },
+  
+  // ІГРАШКИ
+  "toys": {
+    "label": "Іграшки",
+    "emoji": "🧸"
+  },
+  "toys_educational": {
+    "label": "Розвиваючі іграшки",
+    "emoji": "🎓"
+  },
+  
+  // КУХНЯ
+  "kitchen": {
+    "label": "Кухонні товари",
+    "emoji": "🍳"
+  },
+  
+  // ПОБУТОВА ХІМІЯ
+  "household": {
+    "label": "Побутова хімія",
+    "emoji": "🧹"
+  },
+  
+  // КОСМЕТИКА
+  "cosmetics": {
+    "label": "Косметика та гігієна",
+    "emoji": "💄"
+  },
+  
+  // КАНЦЕЛЯРІЯ
+  "stationery": {
+    "label": "Канцелярія",
+    "emoji": "✏️"
+  },
+  
+  // ДЛЯ ДОМУ
+  "home": {
+    "label": "Товари для дому",
+    "emoji": "🏠"
+  },
+  
+  // СПЕЦІАЛЬНА КАТЕГОРІЯ
+  "recommended": {
+    "label": "⭐ Рекомендовано для вас",
+    "emoji": "⭐",
+    "special": true
+  }
 };
+
+console.log('✅ Схему категорій синхронізовано з backend');
 
 // DOM та стан
 const pages = { welcome: document.getElementById('welcomePage'), simple: document.getElementById('simpleSearchPage'), chat: document.getElementById('chatSearchPage') };
@@ -174,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   } catch (_) { /* ignore storage errors */ }
   
-  // Скидаємо флаги привітального повідомлення при перезавантаженні сторінки
+  // Ініціалізуємо флаги привітального повідомлення (без використання sessionStorage)
   welcomeGreetingShown = false;
   welcomeMessageMoved = false;
   welcomeTypingComplete = false;
@@ -361,7 +375,6 @@ async function getProductPrice(goodCode) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': TA_DA_API_TOKEN,
         'User-Language': 'ua'
       },
       body: JSON.stringify({ shop_id: "8", good_code: goodCode })
@@ -1239,6 +1252,8 @@ async function runChatRoundStreaming(input){
             statusText = 'Шукаю товари';
           } else if (type === 'thinking') {
             statusText = 'Думаю';
+          } else if (type === 'recommending') {
+            statusText = 'Пишу рекомендацію';
           }
           statusDiv.innerHTML = `<!--<div class="dot-loader"></div>--><span class="loader-text shimmer-text">${statusText}</span>`;
           bodyEl.appendChild(statusDiv);
@@ -1278,7 +1293,7 @@ async function runChatRoundStreaming(input){
         }
       }
       
-      // Прибираємо статусні повідомлення ("Думаю...", "Шукаю товари...")
+      // Прибираємо статусні повідомлення ("Думаю...", "Шукаю товари...", "Пишу рекомендацію...")
       const statusMessage = bodyEl.querySelector('.status-message');
       if (statusMessage) {
         const parentDiv = statusMessage.closest('.assistant-message');
@@ -1300,7 +1315,7 @@ async function runChatRoundStreaming(input){
         }
       }
       
-      // Прибираємо shimmer текст ("Думаю", "Шукаю")
+      // Прибираємо shimmer текст ("Думаю", "Шукаю товари", "Пишу рекомендацію")
       const shimmerText = bodyEl.querySelector('.shimmer-text');
       if (shimmerText) {
         const parentDiv = shimmerText.closest('.assistant-message');
@@ -1348,6 +1363,45 @@ async function runChatRoundStreaming(input){
       // Якщо payload вже прийшов, рендеримо карусель
       if (finalPayload) {
         renderCarouselAfterAssistant();
+      }
+    });
+    
+    // Обробник події no_results (коли товарів не знайдено)
+    es.addEventListener('no_results', (ev) => {
+      try {
+        const data = JSON.parse(ev.data);
+        
+        // Прибираємо loader та статусні повідомлення
+        bodyEl.classList.remove('loading');
+        const statusMessage = bodyEl.querySelector('.status-message');
+        if (statusMessage) {
+          const parentDiv = statusMessage.closest('.assistant-message');
+          if (parentDiv) parentDiv.remove();
+        }
+        
+        const dotLoader = bodyEl.querySelector('.dot-loader');
+        if (dotLoader) {
+          const parentDiv = dotLoader.closest('.assistant-message');
+          if (parentDiv) parentDiv.remove();
+        }
+        
+        // Показуємо повідомлення про відсутність результатів
+        const noResultsMsg = document.createElement('div');
+        noResultsMsg.className = 'assistant-message';
+        noResultsMsg.style.background = 'transparent';
+        noResultsMsg.innerHTML = `
+          <div style="text-align: center; padding: 20px;">
+            <p style="font-size: 16px; margin-bottom: 16px;">${data.message || 'На жаль, не знайдено товарів за вашим запитом.'}</p>
+            ${data.suggestions ? `
+              <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+                ${data.suggestions.map(s => `<div style="padding: 8px; background: #f5f5f5; border-radius: 8px; font-size: 14px;">💡 ${s}</div>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+        bodyEl.appendChild(noResultsMsg);
+      } catch(e) {
+        console.warn('No results event error:', e);
       }
     });
 
@@ -1545,8 +1599,19 @@ function updateCarouselInSection(section, { products, recommendations = [] }) {
 
       card.innerHTML = `
         ${recommendationBadge}
+        <button class="wishlist-btn" onclick="event.stopPropagation();" title="Додати в обране">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2">
+            <path d="M12.1 21S3 14.7 3 8.8A5.3 5.3 0 0 1 8.4 3.5c1.7 0 2.9.8 3.7 1.9.8-1.1 2-1.9 3.7-1.9A5.3 5.3 0 0 1 21 8.8c0 5.9-9 12.2-9 12.2Z" stroke-linejoin="round"/>
+          </svg>
+        </button>
         <div class="product-image-container">
           <div class="image-placeholder">Завантаження...</div>
+          <button class="image-zoom-btn" onclick="event.stopPropagation();" title="Збільшити зображення">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2">
+              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              <path d="M10 7v6m-3-3h6"/>
+            </svg>
+          </button>
         </div>
         <div class="product-details">
           <h3>${escapeHTML(p.title_ua||'Без назви')}</h3>
@@ -1555,9 +1620,33 @@ function updateCarouselInSection(section, { products, recommendations = [] }) {
             <div class="rating-placeholder"></div>
             <div class="price-placeholder">Завантаження ціни...</div>
           </div>
-        </div>`;
+        </div>
+        <button class="cart-status-btn">У кошику</button>`;
 
       carousel.appendChild(card);
+
+      // Додаємо обробник для кнопки "У кошику"
+      const cartStatusBtn = card.querySelector('.cart-status-btn');
+      if (cartStatusBtn) {
+        cartStatusBtn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          showFullCart();
+        };
+      }
+
+      // Додаємо обробник для кнопки збільшення зображення
+      const imageZoomBtn = card.querySelector('.image-zoom-btn');
+      if (imageZoomBtn) {
+        imageZoomBtn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const img = card.querySelector('.product-image-container img');
+          if (img && img.src) {
+            showImageZoom(img.src);
+          }
+        };
+      }
 
       // Стан завантаження як у основній каруселі
       card.classList.add('loading');
@@ -1873,7 +1962,7 @@ async function finalizeSection(section,{advice,products,recommendations = [], ac
     }
   }
   
-  // Прибираємо shimmer текст ("Думаю", "Шукаю")
+  // Прибираємо shimmer текст ("Думаю", "Шукаю товари", "Пишу рекомендацію")
   const shimmerText = body.querySelector('.shimmer-text');
   if (shimmerText) {
     const parentDiv = shimmerText.closest('.assistant-message');
@@ -1995,8 +2084,19 @@ async function finalizeSection(section,{advice,products,recommendations = [], ac
         
         card.innerHTML=`
           ${recommendationBadge}
+          <button class="wishlist-btn" onclick="event.stopPropagation();" title="Додати в обране">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2">
+              <path d="M12.1 21S3 14.7 3 8.8A5.3 5.3 0 0 1 8.4 3.5c1.7 0 2.9.8 3.7 1.9.8-1.1 2-1.9 3.7-1.9A5.3 5.3 0 0 1 21 8.8c0 5.9-9 12.2-9 12.2Z" stroke-linejoin="round"/>
+            </svg>
+          </button>
           <div class="product-image-container">
             <div class="image-placeholder">Завантаження...</div>
+            <button class="image-zoom-btn" onclick="event.stopPropagation();" title="Збільшити зображення">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2">
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                <path d="M10 7v6m-3-3h6"/>
+              </svg>
+            </button>
           </div>
           <div class="product-details">
             <h3>${escapeHTML(p.title_ua||'Без назви')}</h3>
@@ -2005,8 +2105,32 @@ async function finalizeSection(section,{advice,products,recommendations = [], ac
               <div class="rating-placeholder"></div>
               <div class="price-placeholder">Завантаження ціни...</div>
             </div>
-          </div>`;
+          </div>
+          <button class="cart-status-btn">У кошику</button>`;
         carousel.appendChild(card);
+        
+        // Додаємо обробник для кнопки "У кошику"
+        const cartStatusBtn = card.querySelector('.cart-status-btn');
+        if (cartStatusBtn) {
+          cartStatusBtn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            showFullCart();
+          };
+        }
+        
+        // Додаємо обробник для кнопки збільшення зображення
+        const imageZoomBtn = card.querySelector('.image-zoom-btn');
+        if (imageZoomBtn) {
+          imageZoomBtn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const img = card.querySelector('.product-image-container img');
+            if (img && img.src) {
+              showImageZoom(img.src);
+            }
+          };
+        }
         
         // Додаємо клас завантаження
         card.classList.add('loading');
@@ -2160,7 +2284,20 @@ function finalizeSectionWithoutTextTyping(bodyEl, {products, recommendations = [
     
     card.innerHTML=`
       ${recommendationBadge}
-      <div class="product-image-container"><div class="image-placeholder">Завантаження...</div></div>
+      <button class="wishlist-btn" onclick="event.stopPropagation();" title="Додати в обране">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2">
+          <path d="M12.1 21S3 14.7 3 8.8A5.3 5.3 0 0 1 8.4 3.5c1.7 0 2.9.8 3.7 1.9.8-1.1 2-1.9 3.7-1.9A5.3 5.3 0 0 1 21 8.8c0 5.9-9 12.2-9 12.2Z" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="product-image-container">
+        <div class="image-placeholder">Завантаження...</div>
+        <button class="image-zoom-btn" onclick="event.stopPropagation();" title="Збільшити зображення">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2">
+            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            <path d="M10 7v6m-3-3h6"/>
+          </svg>
+        </button>
+      </div>
       <div class="product-details">
         <h3>${escapeHTML(p.title_ua||'Без назви')}</h3>
         <p>${escapeHTML((p.description_ua||'').slice(0,100))}...</p>
@@ -2168,8 +2305,33 @@ function finalizeSectionWithoutTextTyping(bodyEl, {products, recommendations = [
           <div class="rating-placeholder"></div>
           <div class="price-placeholder">Завантаження ціни...</div>
         </div>
-      </div>`;
+      </div>
+      <button class="cart-status-btn">У кошику</button>`;
     carousel.appendChild(card);
+    
+    // Додаємо обробник для кнопки "У кошику"
+    const cartStatusBtn = card.querySelector('.cart-status-btn');
+    if (cartStatusBtn) {
+      cartStatusBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showFullCart();
+      };
+    }
+    
+    // Додаємо обробник для кнопки збільшення зображення
+    const imageZoomBtn = card.querySelector('.image-zoom-btn');
+    if (imageZoomBtn) {
+      imageZoomBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const img = card.querySelector('.product-image-container img');
+        if (img && img.src) {
+          showImageZoom(img.src);
+        }
+      };
+    }
+    
     card.classList.add('loading');
     
     const priceElement = card.querySelector('.price-placeholder');
@@ -2567,9 +2729,9 @@ async function loadProductImage(containerElement, goodCode){
   if(!goodCode){ if(placeholder) placeholder.textContent='Фото немає'; return; }
   
   try{
-    const response = await fetch("https://api.ta-da.net.ua/v1.2/mobile/find.gcode",{
+    const response = await fetch("/api/ta-da/find.gcode",{
       method:"POST",
-      headers:{ "Content-Type":"application/json","Authorization":TA_DA_API_TOKEN,"User-Language":"ua"},
+      headers:{ "Content-Type":"application/json","User-Language":"ua"},
       body:JSON.stringify({shop_id:"8", good_code:goodCode})
     });
     if(!response.ok) {
@@ -2670,7 +2832,7 @@ async function loadProductRating(containerElement, goodCode, product = null){
   try{
     const response = await fetch("/api/ta-da/find.gcode",{
       method:"POST",
-      headers:{ "Content-Type":"application/json","Authorization":TA_DA_API_TOKEN,"User-Language":"ua"},
+      headers:{ "Content-Type":"application/json","User-Language":"ua"},
       body:JSON.stringify({shop_id:"8", good_code:goodCode})
     });
     if(!response.ok) {
@@ -2820,7 +2982,7 @@ async function loadProductPrice(containerElement, goodCode, product = null){
   try{
     const response = await fetch("/api/ta-da/find.gcode",{
       method:"POST",
-      headers:{ "Content-Type":"application/json","Authorization":TA_DA_API_TOKEN,"User-Language":"ua"},
+      headers:{ "Content-Type":"application/json","User-Language":"ua"},
       body:JSON.stringify({shop_id:"8", good_code:goodCode})
     });
     if(!response.ok) {
@@ -3009,11 +3171,15 @@ function moveWelcomeMessageUp() {
 
 // --- Привітання асистента ---
 function streamWelcomeGreeting() {
-  // Перевіряємо, чи вже було показано привітальне повідомлення
-  if (welcomeGreetingShown) return;
-  
   const thread = document.getElementById('chatThread');
   if (!thread) return;
+  
+  // Перевіряємо, чи вже є привітальне повідомлення в DOM
+  const existingWelcome = thread.querySelector('.welcome-message');
+  if (existingWelcome) return;
+  
+  // Перевіряємо, чи вже було показано привітальне повідомлення (fallback)
+  if (welcomeGreetingShown) return;
   
   // Позначаємо, що привітальне повідомлення вже показано
   welcomeGreetingShown = true;
